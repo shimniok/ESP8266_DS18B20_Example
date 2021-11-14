@@ -2,14 +2,16 @@ import os
 from flask import Flask, request, jsonify
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="./static")
 
 date_fmt = "%y-%m-%d %H:%M:%S"
 log_file="temp.log"
 
+
 @app.route("/")
 def index():
-    return "Hello world"
+    return app.send_static_file('index.html')
+
 
 @app.route("/temp", methods=["GET"])
 def temp_get():
