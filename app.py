@@ -1,4 +1,5 @@
 import os
+from flask import Flask, request, jsonify
 from datetime import datetime
 
 app = Flask(__name__)
@@ -9,6 +10,21 @@ log_file="temp.log"
 @app.route("/")
 def index():
     return "Hello world"
+
+@app.route("/temp", methods=["GET"])
+def temp_get():
+    result = []
+    with open(log_file, "r") as f:
+        data = f.readlines()
+        for d in data:
+            ts, ip, tc, unit = d.rstrip().split(",")
+            entry = {}
+            entry["tempC"] = float(tc)
+            entry["unit"] = unit
+            entry["timestamp"] = ts
+            entry["ip"] = ip
+            result.append(entry)
+    return jsonify(result)
 
 
 @app.route("/temp", methods=["POST"])
