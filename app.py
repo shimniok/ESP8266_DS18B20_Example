@@ -1,9 +1,10 @@
 import os
-from flask import Flask, request
-
+from datetime import datetime
 
 app = Flask(__name__)
 
+date_fmt = "%y-%m-%d %H:%M:%S"
+log_file="temp.log"
 
 @app.route("/")
 def index():
@@ -15,9 +16,12 @@ def temp_post():
     print(request.headers)
     try:
         data = request.json
-        tc = data['tempC']
-        tf = float(tc) * 9.0 / 5.0 + 32.0
-        print(tc, tf)
+        tc = float(data['tempC'])
+        now = datetime.strftime(datetime.utcnow(), date_fmt)
+        with open(log_file, "a") as f:
+            f.write("{ts},{ip},{tc:4.2f},C\n".format(
+                ts=now, ip=request.remote_addr, tc=tc))
+            f.close()
         return "{'status': 'success'}"
     except Exception as e:
         print("Exception: {}".format(e))
